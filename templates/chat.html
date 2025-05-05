@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - AI Platform{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <h1>Chat with Document: {{ document.filename }}</h1>
+        <div class="chat-actions">
+            <button id="clear-chat" class="btn btn-secondary">
+                <i class="fas fa-trash"></i> Clear Chat
+            </button>
+        </div>
+    </div>
+    
+    <div class="chat-window">
+        <div id="chat-messages" class="chat-messages">
+            <div class="message system-message">
+                <div class="message-content">
+                    <p>Hello! I'm your AI assistant. Ask me anything about the document "{{ document.filename }}".</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const clearChatBtn = document.getElementById('clear-chat');
+        const documentId = {{ document.id }};
+        
+        // Clear chat history
+        clearChatBtn.addEventListener('click', function() {
+            while (chatMessages.children.length > 1) {
+                chatMessages.removeChild(chatMessages.lastChild);
+            }
+        });
+        
+        // Handle form submission
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage('user', message);
+            
+            // Clear input
+            chatInput.value = '';
+            
+            // Add loading message
+            const loadingMessage = addMessage('assistant', '<div class="typing-indicator"><span></span><span></span><span></span></div>');
+            
+            // Send message to server
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    document_id: documentId,
+                    query: message
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove loading message
+                chatMessages.removeChild(loadingMessage);
+                
+                // Add assistant response
+                addMessage('assistant', data.response);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(error => {
+                // Remove loading message
+                chatMessages.removeChild(loadingMessage);
+                
+                // Add error message
+                addMessage('system-message', 'An error occurred. Please try again.');
+                console.error('Error:', error);
+            });
+        });
+        
+        // Function to add a message to the chat
+        function addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = `<p>${content}</p>`;
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            return messageDiv;
+        }
+    });
+</script>
+{% endblock %}

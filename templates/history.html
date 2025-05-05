@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}History - AI Platform{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <h1>Chat History</h1>
+    
+    {% if chat_history %}
+        <div class="history-list">
+            {% for chat in chat_history %}
+                <div class="history-item">
+                    <div class="history-header">
+                        <div class="history-info">
+                            <span class="history-date">{{ chat.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                            {% if chat.document %}
+                                <span class="history-document">{{ chat.document.filename }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="history-actions">
+                            <button class="btn btn-sm btn-secondary toggle-history" data-id="{{ chat.id }}">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="history-content" id="history-content-{{ chat.id }}">
+                        <div class="history-query">
+                            <strong>Query:</strong>
+                            <p>{{ chat.query }}</p>
+                        </div>
+                        <div class="history-response">
+                            <strong>Response:</strong>
+                            <p>{{ chat.response }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-history"></i>
+            <p>No chat history yet</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle history item content
+        const toggleButtons = document.querySelectorAll('.toggle-history');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const content = document.getElementById(`history-content-${id}`);
+                content.classList.toggle('expanded');
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (content.classList.contains('expanded')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

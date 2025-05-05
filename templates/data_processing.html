@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}Data Processing - AI Platform{% endblock %}
+
+{% block content %}
+<div class="data-processing-container">
+    <h1>Data Processing</h1>
+    
+    <div class="processing-controls">
+        <div class="control-group">
+            <label for="document-select">Select Document:</label>
+            <select id="document-select" class="form-control">
+                <option value="">-- Select a document --</option>
+                {% for document in current_user.documents %}
+                    <option value="{{ document.id }}">{{ document.filename }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label for="processing-type">Processing Type:</label>
+            <select id="processing-type" class="form-control">
+                <option value="text-extraction">Text Extraction</option>
+                <option value="table-extraction">Table Extraction</option>
+                <option value="image-extraction">Image Extraction</option>
+                <option value="full-analysis">Full Analysis</option>
+            </select>
+        </div>
+        
+        <button id="process-document" class="btn btn-primary">Process Document</button>
+    </div>
+    
+    <div id="processing-results" class="processing-results">
+        <div class="empty-state">
+            <i class="fas fa-cogs"></i>
+            <p>Select a document and processing type to begin</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const processBtn = document.getElementById('process-document');
+        const processingResults = document.getElementById('processing-results');
+        
+        processBtn.addEventListener('click', function() {
+            const documentId = document.getElementById('document-select').value;
+            const processingType = document.getElementById('processing-type').value;
+            
+            if (!documentId) {
+                alert('Please select a document');
+                return;
+            }
+            
+            // Clear previous results
+            processingResults.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Processing document...</div>';
+            
+            // Simulate processing (in a real app, this would be an API call)
+            setTimeout(() => {
+                processingResults.innerHTML = '';
+                
+                switch (processingType) {
+                    case 'text-extraction':
+                        showTextExtractionResults();
+                        break;
+                    case 'table-extraction':
+                        showTableExtractionResults();
+                        break;
+                    case 'image-extraction':
+                        showImageExtractionResults();
+                        break;
+                    case 'full-analysis':
+                        showFullAnalysisResults();
+                        break;
+                }
+            }, 2000);
+        });
+        
+        function showTextExtractionResults() {
+            const resultsDiv = document.createElement('div');
+            resultsDiv.className = 'extraction-results';
+            
+            resultsDiv.innerHTML = `
+                <h2>Text Extraction Results</h2>
+                <div class="result-section">
+                    <h3>Extracted Text</h3>
+                    <div class="text-content">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl, eget ultricies nisl nisl eget nisl. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl, eget ultricies nisl nisl eget nisl.</p>
+                        <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-secondary">Download as TXT</button>
+                    <button class="btn btn-secondary">Download as MD</button>
+                </div>
+            `;
+            
+            processingResults.appendChild(resultsDiv);
+        }
+        
+        function showTableExtractionResults() {
+            const resultsDiv = document.createElement('div');
+            resultsDiv.className = 'extraction-results';
+            
+            resultsDiv.innerHTML = `
+                <h2>Table Extraction Results</h2>
+                <div class="result-section">
+                    <h3>Extracted Tables</h3>
+                    <div class="table-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Item 1</td>
+                                    <td>100</td>
+                                    <td>Active</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Item 2</td>
+                                    <td>200</td>
+                                    <td>Inactive</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Item 3</td>
+                                    <td>300</td>
+                                    <td>Active</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-secondary">Download as CSV</button>
+                    <button class="btn btn-secondary">Download as Excel</button>
+                </div>
+            `;
+            
+            processingResults.appendChild(resultsDiv);
+        }
+        
+        function showImageExtractionResults() {
+            const resultsDiv = document.createElement('div');
+            resultsDiv.className = 'extraction-results';
+            
+            resultsDiv.innerHTML = `
+                <h2>Image Extraction Results</h2>
+                <div class="result-section">
+                    <h3>Extracted Images</h3>
+                    <div class="image-grid">
+                        <div class="image-item">
+                            <img src="/placeholder.svg?height=200&width=300" alt="Extracted Image 1">
+                            <div class="image-caption">Image 1: Sample diagram</div>
+                        </div>
+                        <div class="image-item">
+                            <img src="/placeholder.svg?height=200&width=300" alt="Extracted Image 2">
+                            <div class="image-caption">Image 2: Sample chart</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-secondary">Download All Images</button>
+                </div>
+            `;
+            
+            processingResults.appendChild(resultsDiv);
+        }
+        
+        function showFullAnalysisResults() {
+            const resultsDiv = document.createElement('div');
+            resultsDiv.className = 'extraction-results';
+            
+            resultsDiv.innerHTML = `
+                <h2>Full Analysis Results</h2>
+                <div class="result-tabs">
+                    <button class="tab-btn active" data-tab="text">Text</button>
+                    <button class="tab-btn" data-tab="tables">Tables</button>
+                    <button class="tab-btn" data-tab="images">Images</button>
+                    <button class="tab-btn" data-tab="summary">Summary</button>
+                </div>
+                <div class="tab-content">
+                    <div id="text-tab" class="tab-pane active">
+                        <h3>Extracted Text</h3>
+                        <div class="text-content">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl, eget ultricies nisl nisl eget nisl.</p>
+                            <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        </div>
+                    </div>
+                    <div id="tables-tab" class="tab-pane">
+                        <h3>Extracted Tables</h3>
+                        <div class="table-content">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Item 1</td>
+                                        <td>100</td>
+                                        <td>Active</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Item 2</td>
+                                        <td>200</td>
+                                        <td>Inactive</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="images-tab" class="tab-pane">
+                        <h3>Extracted Images</h3>
+                        <div class="image-grid">
+                            <div class="image-item">
+                                <img src="/placeholder.svg?height=200&width=300" alt="Extracted Image 1">
+                                <div class="image-caption">Image 1: Sample diagram</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="summary-tab" class="tab-pane">
+                        <h3>Document Summary</h3>
+                        <div class="summary-content">
+                            <p><strong>Document Type:</strong> Technical Report</p>
+                            <p><strong>Pages:</strong> 5</p>
+                            <p><strong>Text Sections:</strong> 12</p>
+                            <p><strong>Tables:</strong> 3</p>
+                            <p><strong>Images:</strong> 2</p>
+                            <p><strong>Key Topics:</strong> Technology, Analysis, Data</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-secondary">Download Full Report</button>
+                </div>
+            `;
+            
+            processingResults.appendChild(resultsDiv);
+            
+            // Tab switching functionality
+            const tabBtns = resultsDiv.querySelectorAll('.tab-btn');
+            const tabPanes = resultsDiv.querySelectorAll('.tab-pane');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and panes
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
+                    
+                    // Add active class to current button and pane
+                    this.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

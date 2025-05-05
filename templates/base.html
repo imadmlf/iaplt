@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Platform{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // Check for saved theme preference or default to light
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+    </script>
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>AI Platform</h2>
+                <button id="theme-toggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Dashboard
+                </a></li>
+                <li><a href="{{ url_for('history') }}" class="{% if request.endpoint == 'history' %}active{% endif %}">
+                    <i class="fas fa-history"></i> History
+                </a></li>
+                <li><a href="{{ url_for('conformity_matrix') }}" class="{% if request.endpoint == 'conformity_matrix' %}active{% endif %}">
+                    <i class="fas fa-table"></i> Conformity Matrix
+                </a></li>
+                <li><a href="{{ url_for('data_processing') }}" class="{% if request.endpoint == 'data_processing' %}active{% endif %}">
+                    <i class="fas fa-cogs"></i> Data Processing
+                </a></li>
+                <li><a href="{{ url_for('test_plan') }}" class="{% if request.endpoint == 'test_plan' %}active{% endif %}">
+                    <i class="fas fa-clipboard-check"></i> Test Plan
+                </a></li>
+                <li><a href="{{ url_for('settings') }}" class="{% if request.endpoint == 'settings' %}active{% endif %}">
+                    <i class="fas fa-cog"></i> Settings
+                </a></li>
+                <li><a href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a></li>
+            </ul>
+        </nav>
+        <main class="content">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div class="flash-message">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% else %}
+    <div class="auth-container">
+        <header class="auth-header">
+            <h1>AI Platform</h1>
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i>
+                <i class="fas fa-sun"></i>
+            </button>
+        </header>
+        <main class="auth-content">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div class="flash-message">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% block auth_content %}{% endblock %}
+        </main>
+    </div>
+    {% endif %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

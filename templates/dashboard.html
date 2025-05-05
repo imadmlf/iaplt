@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Platform{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>Welcome, {{ current_user.username }}</h1>
+    
+    <div class="dashboard-grid">
+        <div class="dashboard-card upload-card">
+            <h2>Upload Document</h2>
+            <form action="{{ url_for('upload_document') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+                <div class="file-upload">
+                    <label for="file" class="file-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Choose a PDF file</span>
+                    </label>
+                    <input type="file" id="file" name="file" accept=".pdf" required>
+                    <div id="file-name" class="file-name">No file selected</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+        
+        <div class="dashboard-card documents-card">
+            <h2>Your Documents</h2>
+            {% if documents %}
+                <div class="documents-list">
+                    {% for document in documents %}
+                        <div class="document-item">
+                            <div class="document-info">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="document-name">{{ document.filename }}</span>
+                                <span class="document-date">{{ document.upload_date.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                            <div class="document-actions">
+                                <a href="{{ url_for('chat', document_id=document.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-comments"></i> Chat
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p>No documents uploaded yet</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="dashboard-card stats-card">
+            <h2>Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">{{ documents|length }}</div>
+                    <div class="stat-label">Documents</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ current_user.chat_history|length }}</div>
+                    <div class="stat-label">Chats</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card quick-access-card">
+            <h2>Quick Access</h2>
+            <div class="quick-access-grid">
+                <a href="{{ url_for('conformity_matrix') }}" class="quick-access-item">
+                    <i class="fas fa-table"></i>
+                    <span>Conformity Matrix</span>
+                </a>
+                <a href="{{ url_for('data_processing') }}" class="quick-access-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>Data Processing</span>
+                </a>
+                <a href="{{ url_for('test_plan') }}" class="quick-access-item">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Test Plan</span>
+                </a>
+                <a href="{{ url_for('history') }}" class="quick-access-item">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Display selected file name
+    document.getElementById('file').addEventListener('change', function() {
+        const fileName = this.files[0] ? this.files[0].name : 'No file selected';
+        document.getElementById('file-name').textContent = fileName;
+    });
+</script>
+{% endblock %}

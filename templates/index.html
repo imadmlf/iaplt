@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to AI Platform{% endblock %}
+
+{% block auth_content %}
+<div class="landing-page">
+    <div class="hero-section">
+        <h1 class="hero-title">AI-Powered Document Analysis Platform</h1>
+        <p class="hero-subtitle">Unlock insights from your documents with advanced AI technology</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+            <a href="{{ url_for('register') }}" class="btn btn-secondary">Register</a>
+        </div>
+    </div>
+    
+    <div class="features-section">
+        <h2>Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-robot"></i>
+                <h3>AI-Powered Chat</h3>
+                <p>Interact with your documents using natural language</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-table"></i>
+                <h3>Conformity Matrix</h3>
+                <p>Visualize and analyze compliance data</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-cogs"></i>
+                <h3>Data Processing</h3>
+                <p>Extract and process information from documents</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-clipboard-check"></i>
+                <h3>Test Plan Download</h3>
+                <p>Generate and download comprehensive test plans</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-history"></i>
+                <h3>History Tracking</h3>
+                <p>Keep track of all your interactions and analyses</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Test Plan - AI Platform{% endblock %}
+
+{% block content %}
+<div class="test-plan-container">
+    <h1>Test Plan Generator</h1>
+    
+    <div class="test-plan-form">
+        <div class="form-group">
+            <label for="document-select">Select Document:</label>
+            <select id="document-select" class="form-control">
+                <option value="">-- Select a document --</option>
+                {% for document in current_user.documents %}
+                    <option value="{{ document.id }}">{{ document.filename }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="test-type">Test Type:</label>
+            <select id="test-type" class="form-control">
+                <option value="functional">Functional Testing</option>
+                <option value="performance">Performance Testing</option>
+                <option value="security">Security Testing</option>
+                <option value="compliance">Compliance Testing</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="test-level">Test Level:</label>
+            <select id="test-level" class="form-control">
+                <option value="basic">Basic</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="comprehensive">Comprehensive</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="test-format">Output Format:</label>
+            <select id="test-format" class="form-control">
+                <option value="pdf">PDF</option>
+                <option value="docx">Word Document</option>
+                <option value="xlsx">Excel Spreadsheet</option>
+            </select>
+        </div>
+        
+        <button id="generate-test-plan" class="btn btn-primary">Generate Test Plan</button>
+    </div>
+    
+    <div id="test-plan-preview" class="test-plan-preview">
+        <div class="empty-state">
+            <i class="fas fa-clipboard-check"></i>
+            <p>Configure and generate a test plan to preview</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateBtn = document.getElementById('generate-test-plan');
+        const testPlanPreview = document.getElementById('test-plan-preview');
+        
+        generateBtn.addEventListener('click', function() {
+            const documentId = document.getElementById('document-select').value;
+            const testType = document.getElementById('test-type').value;
+            const testLevel = document.getElementById('test-level').value;
+            
+            if (!documentId) {
+                alert('Please select a document');
+                return;
+            }
+            
+            // Clear previous preview
+            testPlanPreview.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Generating test plan...</div>';
+            
+            // Simulate test plan generation (in a real app, this would be an API call)
+            setTimeout(() => {
+                testPlanPreview.innerHTML = '';
+                showTestPlanPreview(testType, testLevel);
+            }, 2000);
+        });
+        
+        function showTestPlanPreview(testType, testLevel) {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'preview-content';
+            
+            let testTypeName = '';
+            switch (testType) {
+                case 'functional': testTypeName = 'Functional Testing'; break;
+                case 'performance': testTypeName = 'Performance Testing'; break;
+                case 'security': testTypeName = 'Security Testing'; break;
+                case 'compliance': testTypeName = 'Compliance Testing'; break;
+            }
+            
+            let testLevelName = '';
+            switch (testLevel) {
+                case 'basic': testLevelName = 'Basic'; break;
+                case 'intermediate': testLevelName = 'Intermediate'; break;
+                case 'comprehensive': testLevelName = 'Comprehensive'; break;
+            }
+            
+            previewDiv.innerHTML = `
+                <h2>Test Plan Preview: ${testTypeName} (${testLevelName})</h2>
+                <div class="test-plan-document">
+                    <div class="document-section">
+                        <h3>1. Introduction</h3>
+                        <p>This test plan outlines the ${testTypeName.toLowerCase()} approach for the selected document. The test level is set to ${testLevelName.toLowerCase()}, which determines the scope and depth of testing.</p>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>2. Test Scope</h3>
+                        <p>The scope of this test plan includes:</p>
+                        <ul>
+                            <li>Verification of document compliance with standards</li>
+                            <li>Validation of document content accuracy</li>
+                            <li>Assessment of document structure and organization</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>3. Test Cases</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Test Case</th>
+                                    <th>Expected Result</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TC-001</td>
+                                    <td>Verify document structure</td>
+                                    <td>Document follows required structure</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>TC-002</td>
+                                    <td>Validate content accuracy</td>
+                                    <td>Content is accurate and consistent</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>TC-003</td>
+                                    <td>Check for compliance with standards</td>
+                                    <td>Document complies with relevant standards</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>4. Test Schedule</h3>
+                        <p>The testing will be conducted according to the following schedule:</p>
+                        <ul>
+                            <li>Test Planning: 1 day</li>
+                            <li>Test Execution: 3 days</li>
+                            <li>Test Reporting: 1 day</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="preview-actions">
+                    <button class="btn btn-primary">Download Test Plan</button>
+                </div>
+            `;
+            
+            testPlanPreview.appendChild(previewDiv);
+        }
+    });
+</script>
+{% endblock %}

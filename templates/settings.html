@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - AI Platform{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <h1>Settings</h1>
+    
+    <div class="settings-grid">
+        <div class="settings-card">
+            <h2>Profile Settings</h2>
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="{{ current_user.username }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ current_user.email }}" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+        </div>
+        
+        <div class="settings-card">
+            <h2>Change Password</h2>
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" name="current_password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" name="new_password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" name="confirm_password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Change Password</button>
+            </form>
+        </div>
+        
+        <div class="settings-card">
+            <h2>Appearance</h2>
+            <div class="settings-form">
+                <div class="form-group">
+                    <label>Theme</label>
+                    <div class="theme-options">
+                        <button id="light-theme" class="theme-option" data-theme="light">
+                            <div class="theme-preview light-preview"></div>
+                            <span>Light</span>
+                        </button>
+                        <button id="dark-theme" class="theme-option" data-theme="dark">
+                            <div class="theme-preview dark-preview"></div>
+                            <span>Dark</span>
+                        </button>
+                        <button id="system-theme" class="theme-option" data-theme="system">
+                            <div class="theme-preview system-preview"></div>
+                            <span>System</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="animation-toggle">Animations</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="animation-toggle" checked>
+                        <label for="animation-toggle"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-card">
+            <h2>Notifications</h2>
+            <div class="settings-form">
+                <div class="form-group">
+                    <label for="email-notifications">Email Notifications</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="email-notifications" checked>
+                        <label for="email-notifications"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="processing-notifications">Processing Notifications</label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="processing-notifications" checked>
+                        <label for="processing-notifications"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Theme selection
+        const themeOptions = document.querySelectorAll('.theme-option');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        // Set active theme option
+        themeOptions.forEach(option => {
+            if (option.getAttribute('data-theme') === currentTheme) {
+                option.classList.add('active');
+            }
+            
+            option.addEventListener('click', function() {
+                const theme = this.getAttribute('data-theme');
+                
+                // Remove active class from all options
+                themeOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // Add active class to selected option
+                this.classList.add('active');
+                
+                // Set theme
+                if (theme === 'system') {
+                    // Check system preference
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                    localStorage.removeItem('theme');
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('theme', theme);
+                }
+            });
+        });
+        
+        // Animation toggle
+        const animationToggle = document.getElementById('animation-toggle');
+        const animationsEnabled = localStorage.getItem('animations') !== 'disabled';
+        
+        animationToggle.checked = animationsEnabled;
+        
+        if (!animationsEnabled) {
+            document.body.classList.add('no-animations');
+        }
+        
+        animationToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.remove('no-animations');
+                localStorage.removeItem('animations');
+            } else {
+                document.body.classList.add('no-animations');
+                localStorage.setItem('animations', 'disabled');
+            }
+        });
+    });
+</script>
+{% endblock %}
